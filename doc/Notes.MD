@@ -1,3 +1,41 @@
+# Setup of database
+
+## Hosting via AWS LightSail
+
+- [Manage server](https://lightsail.aws.amazon.com/ls/webapp/home/instances)
+- IP of server is 18.184.43.84, Port 22 and 5433 are open
+- Need SSH Key to connect to server via SSH -i, can be downloaded from light sail and need to chmod 400 to make it secure
+- Server has 80 GB SSD, currently ~70% utilized, *TODO* migrate to a larger machine
+
+## Database configuration and bulk import
+
+- Server has old Postgres 9.5 running on port 5433 due to problems with bulk import of Tankerkoenig data.
+- Need to setup deb repository from postgres site to get postgresql95 package
+- wget dumps from [tankerkoenig](https://creativecommons.tankerkoenig.de/)
+- Setup user with read-only access to database to interface dashboard
+- Using postgres user Bulk import with zcat dump | psql -p port -d database -W 
+- Create indices to speed up queries and cluster data
+
+```
+create index time on gas_station_information_history (date ASC);
+create index idx_stid on gas_station_information_history using hash (stid);
+create index idx_combi on gas_station_information_history (stid, date);
+CLUSTER gas_station_information_history USING idx_combi;
+'''
+
+- *TODO* regularly recluster data
+
+## Setup of git pull to update database daily
+
+- *TODO* only get data from march 2018 on *
+- Create cron job to pull git daily in the night, check for new files and update database with content
+
+# Dashboard with shiny or other tools
+
+- In Progress
+
+# Portal Page to search for Fuel Stations
+
 ## Overpass Query
 
 Find fuel stations within Bounding Box
