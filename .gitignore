@@ -2,3 +2,7 @@
 secret.txt
 doc/~$Architecture.pptx
 .Rproj.user
+src/R/secret.properties
+src/R/.Rhistory
+*.properties
+src/shiny-viewer/.Rhistory

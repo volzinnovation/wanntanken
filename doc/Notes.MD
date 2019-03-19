@@ -5,11 +5,13 @@
 - [Manage server](https://lightsail.aws.amazon.com/ls/webapp/home/instances)
 - IP of server is 18.184.43.84, Port 22 and 5433 are open
 - Need SSH Key to connect to server via SSH -i, can be downloaded from light sail and need to chmod 400 to make it secure
-- Server has 80 GB SSD, currently ~70% utilized, *TODO* migrate to a larger machine
+- Server has 80 GB SSD, currently ~70% utilized, with extra 256 GB block storage disk to hold database and git repository (can reattach to other instance)
+- Server has second 250 GB SSD /dev/xvdf mounted to /git 
 
 ## Database configuration and bulk import
 
 - Server has old Postgres 9.5 running on port 5433 due to problems with bulk import of Tankerkoenig data.
+- Change /etc/postgresql/9.5/postgresql.conf to map to port 5433 and have storage directory on mounted drive (currently /git)
 - Need to setup deb repository from postgres site to get postgresql95 package
 - wget dumps from [tankerkoenig](https://creativecommons.tankerkoenig.de/)
 - Setup user with read-only access to database to interface dashboard
@@ -29,6 +31,7 @@ CLUSTER gas_station_information_history USING idx_combi;
 
 - *TODO* only get data from march 2018 on *
 - Create cron job to pull git daily in the night, check for new files and update database with content
+- git pull https://dev.azure.com/tankerkoenig/_git/tankerkoenig-data
 
 # Dashboard with shiny or other tools
 

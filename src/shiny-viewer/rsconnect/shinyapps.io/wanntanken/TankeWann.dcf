@@ -1,0 +1,12 @@
+name: TankeWann
+title: TankeWann
+username:
+account: wanntanken
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 800117
+bundleId: 1950988
+url: https://wanntanken.shinyapps.io/TankeWann/
+when: 1553020904.89065
+asMultiple: FALSE
+asStatic: FALSE
