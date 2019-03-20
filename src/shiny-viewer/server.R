@@ -104,7 +104,7 @@ function(input, output, session) {
   
   # Graph Output
   output$dygraph <- renderDygraph({
-    dygraph(dataset(), main = paste0(input$price, "preis in Cent")) %>%
+    dygraph(dataset(), main = paste('Preis von',input$price, "in Cent")) %>%
       dyOptions(drawGrid = input$showgrid) %>%
       dyOptions(stepPlot = TRUE)
   })
