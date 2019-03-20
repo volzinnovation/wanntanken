@@ -50,7 +50,12 @@ ui <- fluidPage(
   fluidRow(
     
     column(12,
-           p("(c) 2019 Raphael Volz (raphael.volz@hs-pforzheim.de) mit Daten CC-BY-SA 4.0 tankerkoenig.de"))
+           p('(c) 2019',
+             tags$a(href='https://www.raphaelvolz.de/','Raphael Volz (raphael.volz@hs-pforzheim.de)'),' | ',
+             tags$a(href='https://github.com/volzinnovation/wanntanken','Open Source - Fork me on Github'),' | ',
+             tags$a(href='http://tankerkoenig.de','Daten von tankerkoenig.de unter CC-BY-SA 4.0')
+           )
+    )       
   )
 ) # Fluidpage UI
 

@@ -51,9 +51,11 @@ fluidPage(
     
     column(12,
            p('(c) 2019',
-              tags$a(href='https://www.raphaelvolz.de/','Raphael Volz (raphael.volz@hs-pforzheim.de)'),
-              tags$a(href='http://tankerkoenig.de','Daten von tankerkoenig.de unter CC-BY-SA 4.0')))
-          
+             tags$a(href='https://www.raphaelvolz.de/','Raphael Volz (raphael.volz@hs-pforzheim.de)'),' | ',
+             tags$a(href='https://github.com/volzinnovation/wanntanken','Open Source - Fork me on Github'),' | ',
+             tags$a(href='http://tankerkoenig.de','Daten von tankerkoenig.de unter CC-BY-SA 4.0')
+           )
+    )       
   )
    
 )
