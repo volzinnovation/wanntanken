@@ -20,9 +20,9 @@ function(input, output, session) {
   
   # This code will be run after the client has disconnected
   session$onSessionEnded(function() {
-    dbDisconnect(con)
+    # Something to do here ?
   })
-  
+
    dataset <- reactive({
     # Parse Query    
      query <- parseQueryString(session$clientData$url_search)
@@ -33,6 +33,8 @@ function(input, output, session) {
        stid = 'b4ed695f-2cfc-4688-8ecf-268b10cdb93e' # OMV Bad Herrenalb
      }
      # Last known price update for this station
+     
+     con <- dbConnect(drv, dbname=p$dbname, user=p$user, password=p$password, host=p$host, port=p$port)
      max_station =  dbGetQuery(con, statement = paste0("select max(date)",
                                                        " from gas_station_information_history ",
                                                        "where stid='", stid, 
@@ -63,6 +65,8 @@ function(input, output, session) {
                                               "' and date >= '", ( min - 60*60), # 1 hour back for GMT vs CET, lala 
                                               "' order by date"))
      
+     dbDisconnect(con)
+     
      
       if(input$price == "E10") {
          xts(x=ts$e10/10 , order.by=ts$date, name="E10")
@@ -82,10 +86,14 @@ function(input, output, session) {
     } else {
       stid = 'b4ed695f-2cfc-4688-8ecf-268b10cdb93e' # OMV Bad Herrenalb
     }
+    
+    con <- dbConnect(drv, dbname=p$dbname, user=p$user, password=p$password, host=p$host, port=p$port)
     address = dbGetQuery(con, statement = paste0("select *",
                                        " from gas_station",
                                        " where id='", stid, 
                                        "'"))
+    
+    dbDisconnect(con)
     tagList(
       
      h4(paste(address$brand[1], address$name[1])),
@@ -132,6 +140,7 @@ function(input, output, session) {
     result.frame
 
     DT::datatable(result.frame,
+     #             caption = 'Tabelle: Abweichungen zum Durchschnittspreis im ausgewählten Zeitraum (in Cent)',
                   options = list(pageLength = 24, paging = FALSE, searching=FALSE
                                 ,
                                   rowCallback = DT::JS(

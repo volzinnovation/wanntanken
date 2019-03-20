@@ -2,7 +2,7 @@ require(RPostgreSQL)
 require(properties)
 p = read.properties("secret.properties")
 drv <- dbDriver("PostgreSQL")
-con <- dbConnect(drv, dbname=p$dbname, user=p$user, password=p$password, host=p$host, port=p$port)
+
 # on.exit(dbDisconnect(con))
 
 # df <- dbGetQuery(con, statement = paste("SELECT count(*)","FROM gas_station"))
