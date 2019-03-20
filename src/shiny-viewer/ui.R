@@ -15,7 +15,7 @@ fluidPage(
      
      htmlOutput("station"),
 
-     selectInput("price", "Sorte",
+     selectInput("price", "Sorte:",
                  c("Diesel" = "Diesel",
                    "E10" = "E10",
                    "E5" = "E5")),
