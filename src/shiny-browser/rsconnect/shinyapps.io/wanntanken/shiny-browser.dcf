@@ -1,0 +1,12 @@
+name: shiny-browser
+title: shiny-browser
+username:
+account: wanntanken
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 800683
+bundleId: 1951418
+url: https://wanntanken.shinyapps.io/shiny-browser/
+when: 1553032539.41792
+asMultiple: FALSE
+asStatic: FALSE
