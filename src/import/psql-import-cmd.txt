@@ -1,0 +1,1 @@
+COPY gas_station_information_history(stid,diesel,e5,e10,date) FROM 'import.csv' DELIMITERS ',' CSV HEADER;

@@ -20,5 +20,5 @@ if (length(args) == 0) {
   # reorder columns
   e = d[c(2,4,5,3,1)]
   # create import CSV file
-  write.csv(e, file=paste0(args[],".import"), quote=TRUE, row.names=FALSE)
+  write.csv(e, file="import.csv", quote=TRUE, row.names=FALSE)
 }
