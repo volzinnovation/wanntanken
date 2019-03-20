@@ -29,15 +29,26 @@ CLUSTER gas_station_information_history USING idx_combi;
 
 ## Setup of git pull to update database daily
 
-- *TODO* only get data from march 2018 on *
+- *TODO* only get data from 20 march 2018 on *
 - Create cron job to pull git daily in the night, check for new files and update database with content
 - git pull https://dev.azure.com/tankerkoenig/_git/tankerkoenig-data
+- Rscript import/convert_git2psql_copy.R
+- psql -u postgres -d fuel -p 5433
+- Execute Postgres command:
+
+```
+COPY gas_station_information_history(stid,diesel,e5,e10,date) FROM 'yyyy-mm-dd-prices.csv.import' DELIMITERS ',' CSV HEADER;
+'''
 
 # Dashboard with shiny or other tools
 
-- In Progress
+See src/shiny-viewer 
 
 # Portal Page to search for Fuel Stations
+
+See src/shiny-browser
+ 
+# Other ideas not yet implemented
 
 ## Overpass Query
 

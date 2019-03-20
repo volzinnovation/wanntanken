@@ -6,3 +6,9 @@ src/R/secret.properties
 src/R/.Rhistory
 *.properties
 src/shiny-viewer/.Rhistory
+src/import/examples/2019-03-18-prices.csv
+src/import/examples/2019-03-19-prices.csv
+src/import/examples/2019-03-19-prices.csv.import
+src/import/examples/ubuntu@18.184.43.84
+src/import/out/import.csv
+src/shiny-browser/.Rhistory
