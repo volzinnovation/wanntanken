@@ -38,7 +38,12 @@ CLUSTER gas_station_information_history USING idx_combi;
 
 ```
 COPY gas_station_information_history(stid,diesel,e5,e10,date) FROM 'yyyy-mm-dd-prices.csv.import' DELIMITERS ',' CSV HEADER;
+COPY gas_station_information_history(stid,e5,e10,diesel,date) FROM 'yyyy-mm-dd-prices.csv.import' DELIMITERS ',' CSV HEADER;
 '''
+
+diesel => e5
+e10 => diesel
+e5 => e10
 
 # Dashboard with shiny or other tools
 
