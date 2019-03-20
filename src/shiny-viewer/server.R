@@ -24,7 +24,7 @@ function(input, output, session) {
   })
 
    dataset <- reactive({
-    # Parse Query    
+     # Parse Query    
      query <- parseQueryString(session$clientData$url_search)
      # Return a string with key-value pairs
      if("stid" %in% names(query)) {
@@ -50,13 +50,13 @@ function(input, output, session) {
      maxts = dbGetQuery(con, statement = paste0("select min(date)",
                                                 " from gas_station_information_history ",
                                                 "where stid='", stid, 
-                                                "' and date >= '", input$end, " 23:59:59'"))
+                                                "' and date >= '", input$daterange[2], " 23:59:59'"))
      if( !is.na(maxts$min)) { if ( maxts$min < max) {  max = maxts$min }}
      # Calculate least price update before chosen interval
      mints = dbGetQuery(con, statement = paste0("select max(date)",
                                                 " from gas_station_information_history ",
                                                 "where stid='", stid, 
-                                                "' and date <= '", input$start, " 0:00:00'"))
+                                                "' and date <= '", input$daterange[1], " 0:00:00'"))
      if( !is.na(mints$max)) { if(mints$max > min) { min = mints$max }}
      ts <- dbGetQuery(con, statement = paste0("select date,diesel,e5,e10",
                                               " from gas_station_information_history ",
@@ -112,8 +112,8 @@ function(input, output, session) {
   # Table Output
   output$table <- renderDataTable({
     d = dataset()
-    start = as.POSIXct(paste0(input$start, " 0:00:00"))
-    end = as.POSIXct(paste0(input$end, " 23:59:59"))
+    start = as.POSIXct(paste0(input$daterange[1], " 0:00:00"))
+    end = as.POSIXct(paste0(input$daterange[2], " 23:59:59"))
     min = min(index(dataset()))
     max = max(index(dataset()))
     # Regularize TS to 1 min precision

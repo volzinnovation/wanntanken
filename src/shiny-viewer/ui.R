@@ -19,15 +19,12 @@ fluidPage(
                  c("Diesel" = "Diesel",
                    "E10" = "E10",
                    "E5" = "E5")),
-     
-     dateInput("start", "Beginn:", 
-               value = format(Sys.Date()-21,"%Y-%m-%d"), 
-               min="2014-06-09", max=format(Sys.Date()-1,"%Y-%m-%d")),
-     
-     dateInput("end", "Ende:", 
-               value = format(Sys.Date()-21,"%Y-%m-%d"), 
-               min="2014-06-09",
-               max=format(Sys.Date()-1,"%Y-%m-%d"))
+     dateRangeInput("daterange", "Zeitraum:",
+                    start = format(Sys.Date()-8,"%Y-%m-%d"),
+                    end   = format(Sys.Date()-1,"%Y-%m-%d"),
+                    min="2014-06-09",
+                    max=format(Sys.Date()-1,"%Y-%m-%d")
+                    )
    ),
   
   mainPanel(
