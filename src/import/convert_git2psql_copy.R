@@ -3,7 +3,7 @@
 #
 # /git/tankerkoenig-data
 # prices/2019/03/2019-03-20-prices.csv
-prefix = '/git/tankerkoenig-data/'
+prefix = '/git/tankerkoenig-data'
 date = Sys.Date()-1 # Yesterdays data is pulled from Git
 year = format(date,"%Y")
 month= format(date,"%m")
