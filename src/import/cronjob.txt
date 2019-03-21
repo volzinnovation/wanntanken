@@ -1,0 +1,4 @@
+git -C /git/tankerkoenig-data/prices/ pull
+Rscript /git/wanntanken/src/import/convert_git2psql_copy.R
+sudo -u postgres psql -p 5433 -d fuel -f /git/wanntanken/src/import/psql-import-cmd.txt
+rm /tmp/import.csv
