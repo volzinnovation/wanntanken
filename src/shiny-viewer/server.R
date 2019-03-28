@@ -136,23 +136,35 @@ function(input, output, session) {
     result.frame =  result.frame[order( result.frame$price), ]
     min_price = min(result.frame$price)
     max_price = max(result.frame$price)
-    names(result.frame) = c("Stunde", "Abweichung in Cent")
-    result.frame
+     names(result.frame) = c("Stunde", "Preisabweichung")
 
+   
     DT::datatable(result.frame,
-     #             caption = 'Tabelle: Abweichungen zum Durchschnittspreis im ausgewählten Zeitraum (in Cent pro Liter)',
-                  options = list(pageLength = 24, paging = FALSE, searching=FALSE
-                                ,
-                                  rowCallback = DT::JS(
-  ' function(row, data) {
-       if (parseFloat(data[1]) >= 2 )
-         $("td:eq(1)", row).css("background-color", "#FF0000");
-       if (parseFloat(data[1]) <= -2 )
-         $("td:eq(1)", row).css("background-color", "#00FF00");
-  }'
-                 ) #JS
+                  options = list(pageLength = 24, 
+                                 paging = FALSE, 
+                                 searching=FALSE
+  #                               ,
+  #                                 rowCallback = DT::JS(
+  # ' function(row, data) {
+  #        $("td:eq(1)", row).css("background-color", "#00FF00");
+  #      if (parseFloat(data[2]) < 75 )
+  #        $("td:eq(1)", row).css("background-color", "#FFFF00");
+  #      if (parseFloat(data[2]) < 25 )
+  #        $("td:eq(1)", row).css("background-color", "#FF0000");
+  # }'
+  #                ) #JS
                   ) #Options
-                  , rownames= FALSE)
+                  , rownames= FALSE) %>% formatStyle(
+                    'Preisabweichung',
+                    backgroundColor = styleInterval( 
+                   # c(-3,-2.7,-2.4,-2.1,-1.9,-1.6,-1.3,-1,-0.8,-0.5,-0.3,0,0.3,0.5,0.8,1,1.3,1.6,1.9,2.1,2.4,2.7,3)
+                      seq(from=min_price,to=max_price,length.out=23),
+                                                     
+                      c("#00FF00","#22FF00","#44FF00","#66FF00","#77FF00","#88FF00","#99FF00",
+                                                       "#AAFF00","#BBFF00","#CCFF00","#DDFF00","#EEFF00","#FFEE00","#FFDD00",
+                                                       "#FFCC00","#FFBB00","#FFAA00","#FF9900","#FF8800","#FF7700","#FF6600",
+                                                       "#FF4400","#FF2200","#FF0000")))
+
   })
 
 } # End Function (input, output, session)

@@ -12,3 +12,4 @@ src/import/examples/2019-03-19-prices.csv.import
 src/import/examples/ubuntu@18.184.43.84
 src/import/out/import.csv
 src/shiny-browser/.Rhistory
+src/shiny-browser/.RData
