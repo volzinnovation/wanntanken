@@ -140,7 +140,7 @@ function(input, output, session) {
     result.frame
 
     DT::datatable(result.frame,
-     #             caption = 'Tabelle: Abweichungen zum Durchschnittspreis im ausgewählten Zeitraum (in Cent)',
+     #             caption = 'Tabelle: Abweichungen zum Durchschnittspreis im ausgewählten Zeitraum (in Cent pro Liter)',
                   options = list(pageLength = 24, paging = FALSE, searching=FALSE
                                 ,
                                   rowCallback = DT::JS(

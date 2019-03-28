@@ -50,6 +50,8 @@ ui <- fluidPage(
   fluidRow(
     
     column(12,
+           p("Farben entsprechen Durchschnittspreisen für Diesel in Deutschland 2019: Grün: Günstigste 25%, Rot:  Teuerste 25%, Gelb: Interquartilbereich, Grau: Vermutlich nicht operativ.")
+           ,
            p('(c) 2019',
              tags$a(href='https://www.raphaelvolz.de/','Raphael Volz (raphael.volz@hs-pforzheim.de)'),' | ',
              tags$a(href='https://github.com/volzinnovation/wanntanken','Open Source - Fork me on Github'),' | ',
@@ -102,9 +104,9 @@ server <- function(input, output) {
         data = subset(d, latitude < (cy+o) & latitude > (cy-o) & longitude > (cx-o) & longitude < (cx+o) )
         leafletProxy("mymap", data = data) %>%
           clearMarkers()   %>% 
-          addMarkers(~longitude, ~latitude, 
+          addCircleMarkers(~longitude, ~latitude, 
                    popup = ~paste0('<a href="https://wanntanken.shinyapps.io/TankeWann/?stid=',as.character(uuid),'">',paste(brand,name),'</a>'), 
-                   label = ~paste(brand,name))
+                   label = ~paste(brand,name), color=~label, radius=6)
       }
     }
   })
@@ -123,9 +125,9 @@ server <- function(input, output) {
     if(nrow(data) > 0) {
       
       m <- leaflet(data=data) %>% addProviderTiles(providers$Stamen.TonerLite, options = providerTileOptions(noWrap = TRUE)) %>% 
-        setView(x,y,13) %>% addMarkers( ~longitude, ~latitude, 
+        setView(x,y,13) %>% addCircleMarkers( ~longitude, ~latitude, 
                               popup = ~paste0('<a href="https://wanntanken.shinyapps.io/TankeWann/?stid=',as.character(uuid),'">',paste(brand,name),'</a>'), 
-                              label = ~paste(brand,name))
+                              label = ~paste(brand,name), color=~label, radius=6)
     } else {
       m <- leaflet() %>% addProviderTiles(providers$Stamen.TonerLite, options = providerTileOptions(noWrap = TRUE)) %>% 
         setView(x,y,13) 
