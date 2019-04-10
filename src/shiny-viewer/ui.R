@@ -14,7 +14,9 @@ fluidPage(
      h3("Historische Preise"),
      
      htmlOutput("station"),
-
+     
+     verbatimTextOutput('openingtimes'),
+     
      selectInput("price", "Sorte:",
                  c("Diesel" = "Diesel",
                    "E10" = "E10",

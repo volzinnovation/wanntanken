@@ -4,6 +4,8 @@ library(xts)
 library(dygraphs)
 library(dplyr)
 library(DT)
+library(RCurl)
+library(jsonlite)
 
 list_to_string <- function(obj, listname) {
   if (is.null(names(obj))) {
@@ -88,19 +90,41 @@ function(input, output, session) {
     }
     
     con <- dbConnect(drv, dbname=p$dbname, user=p$user, password=p$password, host=p$host, port=p$port)
-    address = dbGetQuery(con, statement = paste0("select *",
+    address = dbGetQuery(con, statement = paste0("select brand, name, street, house_number, post_code, place",
                                        " from gas_station",
                                        " where id='", stid, 
                                        "'"))
-    
-    dbDisconnect(con)
+     dbDisconnect(con)
     tagList(
-      
      h4(paste(address$brand[1], address$name[1])),
      p(paste(address$street[1],address$house_number[1])),
      p(paste(address$post_code[1],address$place[1]))
-     
+    
+     # lapply(1:nrow(ot), function(i) {
+     #  bits = getBitIndicators(ot$applicable_days[i],  c(Mo = 1, Di = 2, Mi = 4, Do = 8, Fr = 16, Sa = 32, So = 64, FT = 128))
+     #  for( j in names(bits) ) {
+     #   p(paste0( j, ":" , ot$periods[[i]]$startp[1], "-", ot$periods[[i]]$endp[1], "\n"))
+      # }
+    # })
   )})
+  
+  # Opening Times Output
+  
+  output$openingtimes <- renderPrint({
+    con <- dbConnect(drv, dbname=p$dbname, user=p$user, password=p$password, host=p$host, port=p$port)
+    address = dbGetQuery(con, statement = paste0("select ot_json",
+                                                 " from gas_station",
+                                                 " where id='", stid, 
+                                                 "'"))
+    ot = fromJSON(address$ot_json[1],simplifyVector = TRUE,simplifyDataFrame = TRUE, simplifyMatrix = FALSE,flatten = TRUE)$openingTimes
+    dbDisconnect(con)
+    res <- lapply(1:nrow(ot), function(i) {
+      bits = getBitIndicators(ot$applicable_days[i],  c(Mo = 1, Di = 2, Mi = 4, Do = 8, Fr = 16, Sa = 32, So = 64, FT = 128))
+      for( j in names(bits) ) {
+        cat( j, ":" , ot$periods[[i]]$startp[1], "-", ot$periods[[i]]$endp[1], "\n")
+      }
+    })
+  })
   
   # Graph Output
   output$dygraph <- renderDygraph({
