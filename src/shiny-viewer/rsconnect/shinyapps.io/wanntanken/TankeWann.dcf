@@ -5,8 +5,8 @@ account: wanntanken
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 800117
-bundleId: 2001326
+bundleId: 2001480
 url: https://wanntanken.shinyapps.io/TankeWann/
-when: 1554925898.05475
+when: 1554930888.55491
 asMultiple: FALSE
 asStatic: FALSE

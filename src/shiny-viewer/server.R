@@ -183,8 +183,8 @@ function(input, output, session) {
       }
       # Remove rows
       cat("Max: ", maxh, " Minh:", minh)
-      result.frame = result.frame[-seq(maxh+1,24),] # erst max time  ab maxh+1 wegen 0
-      result.frame = result.frame[-seq(0,minh),] # dann minh bis minh+1  wegen der 0
+      if(maxh > 0) result.frame = result.frame[-seq(maxh+1,24),] # erst max time  ab maxh+1 wegen 0
+      if(minh > 0) result.frame = result.frame[-seq(0,minh),] # dann minh 
     }
     # Sortiere nach Preis, beste Zeit zuerst
     result.frame =  result.frame[order( result.frame$price), ]
