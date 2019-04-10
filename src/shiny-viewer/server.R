@@ -99,13 +99,6 @@ function(input, output, session) {
      h4(paste(address$brand[1], address$name[1])),
      p(paste(address$street[1],address$house_number[1])),
      p(paste(address$post_code[1],address$place[1]))
-    
-     # lapply(1:nrow(ot), function(i) {
-     #  bits = getBitIndicators(ot$applicable_days[i],  c(Mo = 1, Di = 2, Mi = 4, Do = 8, Fr = 16, Sa = 32, So = 64, FT = 128))
-     #  for( j in names(bits) ) {
-     #   p(paste0( j, ":" , ot$periods[[i]]$startp[1], "-", ot$periods[[i]]$endp[1], "\n"))
-      # }
-    # })
   )})
   
   # Opening Times Output
@@ -145,6 +138,16 @@ function(input, output, session) {
   
   # Table Output
   output$table <- renderDataTable({
+    query <- parseQueryString(session$clientData$url_search)
+    if("stid" %in% names(query)) {
+      stid = query$stid
+    } else {
+      stid = 'b4ed695f-2cfc-4688-8ecf-268b10cdb93e' # OMV Bad Herrenalb
+    }
+    con <- dbConnect(drv, dbname=p$dbname, user=p$user, password=p$password, host=p$host, port=p$port)
+    address = dbGetQuery(con, statement = paste0("select ot_json from gas_station  where id='", stid, "'"))
+    dbDisconnect(con)
+    
     d = dataset()
     start = as.POSIXct(paste0(input$daterange[1], " 0:00:00"))
     end = as.POSIXct(paste0(input$daterange[2], " 23:59:59"))
@@ -167,6 +170,23 @@ function(input, output, session) {
     result.frame = data.frame(key=names(result), value=result)
     names(result.frame)  = c("hour","price")
     result.frame[,2] = round (  result.frame[,2] ,1) # Show only two Digits
+    # Eleminiere geschlossene Zeiten
+    if(address$ot_json[1] != "{}") {
+      minh = 24
+      maxh = 0
+      ot = fromJSON(address$ot_json[1],simplifyVector = TRUE,simplifyDataFrame = TRUE, simplifyMatrix = FALSE,flatten = TRUE)$openingTimes
+      for(i in seq(1,nrow(ot))) {
+        starth = as.numeric(strsplit(ot$periods[[i]]$startp[1], ":")[[1]])[1]
+        if(starth < minh) minh = starth
+        endh = as.numeric(strsplit(ot$periods[[i]]$endp[1], ":")[[1]])[1]
+        if(endh > maxh) maxh = endh
+      }
+      # Remove rows
+      cat("Max: ", maxh, " Minh:", minh)
+      result.frame = result.frame[-seq(maxh+1,24),] # erst max time  ab maxh+1 wegen 0
+      result.frame = result.frame[-seq(0,minh),] # dann minh bis minh+1  wegen der 0
+    }
+    # Sortiere nach Preis, beste Zeit zuerst
     result.frame =  result.frame[order( result.frame$price), ]
     min_price = min(result.frame$price)
     max_price = max(result.frame$price)
