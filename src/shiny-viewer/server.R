@@ -111,11 +111,20 @@ function(input, output, session) {
   # Opening Times Output
   
   output$openingtimes <- renderPrint({
+    query <- parseQueryString(session$clientData$url_search)
+    if("stid" %in% names(query)) {
+      stid = query$stid
+    } else {
+      stid = 'b4ed695f-2cfc-4688-8ecf-268b10cdb93e' # OMV Bad Herrenalb
+    }
     con <- dbConnect(drv, dbname=p$dbname, user=p$user, password=p$password, host=p$host, port=p$port)
     address = dbGetQuery(con, statement = paste0("select ot_json",
                                                  " from gas_station",
                                                  " where id='", stid, 
                                                  "'"))
+    if(address$ot_json[1] == "{}") {
+      res <- cat("24h geöffnet")
+    } else {
     ot = fromJSON(address$ot_json[1],simplifyVector = TRUE,simplifyDataFrame = TRUE, simplifyMatrix = FALSE,flatten = TRUE)$openingTimes
     dbDisconnect(con)
     res <- lapply(1:nrow(ot), function(i) {
@@ -124,6 +133,7 @@ function(input, output, session) {
         cat( j, ":" , ot$periods[[i]]$startp[1], "-", ot$periods[[i]]$endp[1], "\n")
       }
     })
+    }
   })
   
   # Graph Output
