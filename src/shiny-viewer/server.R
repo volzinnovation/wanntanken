@@ -4,8 +4,6 @@ library(xts)
 library(dygraphs)
 library(dplyr)
 library(DT)
-library(RCurl)
-library(jsonlite)
 
 list_to_string <- function(obj, listname) {
   if (is.null(names(obj))) {
@@ -90,44 +88,19 @@ function(input, output, session) {
     }
     
     con <- dbConnect(drv, dbname=p$dbname, user=p$user, password=p$password, host=p$host, port=p$port)
-    address = dbGetQuery(con, statement = paste0("select brand, name, street, house_number, post_code, place",
+    address = dbGetQuery(con, statement = paste0("select *",
                                        " from gas_station",
                                        " where id='", stid, 
                                        "'"))
-     dbDisconnect(con)
+    
+    dbDisconnect(con)
     tagList(
+      
      h4(paste(address$brand[1], address$name[1])),
      p(paste(address$street[1],address$house_number[1])),
      p(paste(address$post_code[1],address$place[1]))
+     
   )})
-  
-  # Opening Times Output
-  
-  output$openingtimes <- renderPrint({
-    query <- parseQueryString(session$clientData$url_search)
-    if("stid" %in% names(query)) {
-      stid = query$stid
-    } else {
-      stid = 'b4ed695f-2cfc-4688-8ecf-268b10cdb93e' # OMV Bad Herrenalb
-    }
-    con <- dbConnect(drv, dbname=p$dbname, user=p$user, password=p$password, host=p$host, port=p$port)
-    address = dbGetQuery(con, statement = paste0("select ot_json",
-                                                 " from gas_station",
-                                                 " where id='", stid, 
-                                                 "'"))
-    if(address$ot_json[1] == "{}") {
-      res <- cat("24h geöffnet")
-    } else {
-    ot = fromJSON(address$ot_json[1],simplifyVector = TRUE,simplifyDataFrame = TRUE, simplifyMatrix = FALSE,flatten = TRUE)$openingTimes
-    dbDisconnect(con)
-    res <- lapply(1:nrow(ot), function(i) {
-      bits = getBitIndicators(ot$applicable_days[i],  c(Mo = 1, Di = 2, Mi = 4, Do = 8, Fr = 16, Sa = 32, So = 64, FT = 128))
-      for( j in names(bits) ) {
-        cat( j, ":" , ot$periods[[i]]$startp[1], "-", ot$periods[[i]]$endp[1], "\n")
-      }
-    })
-    }
-  })
   
   # Graph Output
   output$dygraph <- renderDygraph({
@@ -138,16 +111,6 @@ function(input, output, session) {
   
   # Table Output
   output$table <- renderDataTable({
-    query <- parseQueryString(session$clientData$url_search)
-    if("stid" %in% names(query)) {
-      stid = query$stid
-    } else {
-      stid = 'b4ed695f-2cfc-4688-8ecf-268b10cdb93e' # OMV Bad Herrenalb
-    }
-    con <- dbConnect(drv, dbname=p$dbname, user=p$user, password=p$password, host=p$host, port=p$port)
-    address = dbGetQuery(con, statement = paste0("select ot_json from gas_station  where id='", stid, "'"))
-    dbDisconnect(con)
-    
     d = dataset()
     start = as.POSIXct(paste0(input$daterange[1], " 0:00:00"))
     end = as.POSIXct(paste0(input$daterange[2], " 23:59:59"))
@@ -170,55 +133,26 @@ function(input, output, session) {
     result.frame = data.frame(key=names(result), value=result)
     names(result.frame)  = c("hour","price")
     result.frame[,2] = round (  result.frame[,2] ,1) # Show only two Digits
-    # Eleminiere geschlossene Zeiten
-    if(address$ot_json[1] != "{}") {
-      minh = 24
-      maxh = 0
-      ot = fromJSON(address$ot_json[1],simplifyVector = TRUE,simplifyDataFrame = TRUE, simplifyMatrix = FALSE,flatten = TRUE)$openingTimes
-      for(i in seq(1,nrow(ot))) {
-        starth = as.numeric(strsplit(ot$periods[[i]]$startp[1], ":")[[1]])[1]
-        if(starth < minh) minh = starth
-        endh = as.numeric(strsplit(ot$periods[[i]]$endp[1], ":")[[1]])[1]
-        if(endh > maxh) maxh = endh
-      }
-      # Remove rows
-      cat("Max: ", maxh, " Minh:", minh)
-      if(maxh > 0) result.frame = result.frame[-seq(maxh+1,24),] # erst max time  ab maxh+1 wegen 0
-      if(minh > 0) result.frame = result.frame[-seq(0,minh),] # dann minh 
-    }
-    # Sortiere nach Preis, beste Zeit zuerst
     result.frame =  result.frame[order( result.frame$price), ]
     min_price = min(result.frame$price)
     max_price = max(result.frame$price)
-     names(result.frame) = c("Stunde", "Preisabweichung")
+    names(result.frame) = c("Stunde", "Abweichung in Cent")
+    result.frame
 
-   
     DT::datatable(result.frame,
-                  options = list(pageLength = 24, 
-                                 paging = FALSE, 
-                                 searching=FALSE
-  #                               ,
-  #                                 rowCallback = DT::JS(
-  # ' function(row, data) {
-  #        $("td:eq(1)", row).css("background-color", "#00FF00");
-  #      if (parseFloat(data[2]) < 75 )
-  #        $("td:eq(1)", row).css("background-color", "#FFFF00");
-  #      if (parseFloat(data[2]) < 25 )
-  #        $("td:eq(1)", row).css("background-color", "#FF0000");
-  # }'
-  #                ) #JS
+     #             caption = 'Tabelle: Abweichungen zum Durchschnittspreis im ausgewählten Zeitraum (in Cent pro Liter)',
+                  options = list(pageLength = 24, paging = FALSE, searching=FALSE
+                                ,
+                                  rowCallback = DT::JS(
+  ' function(row, data) {
+       if (parseFloat(data[1]) >= 2 )
+         $("td:eq(1)", row).css("background-color", "#FF0000");
+       if (parseFloat(data[1]) <= -2 )
+         $("td:eq(1)", row).css("background-color", "#00FF00");
+  }'
+                 ) #JS
                   ) #Options
-                  , rownames= FALSE) %>% formatStyle(
-                    'Preisabweichung',
-                    backgroundColor = styleInterval( 
-                   # c(-3,-2.7,-2.4,-2.1,-1.9,-1.6,-1.3,-1,-0.8,-0.5,-0.3,0,0.3,0.5,0.8,1,1.3,1.6,1.9,2.1,2.4,2.7,3)
-                      seq(from=min_price,to=max_price,length.out=23),
-                                                     
-                      c("#00FF00","#22FF00","#44FF00","#66FF00","#77FF00","#88FF00","#99FF00",
-                                                       "#AAFF00","#BBFF00","#CCFF00","#DDFF00","#EEFF00","#FFEE00","#FFDD00",
-                                                       "#FFCC00","#FFBB00","#FFAA00","#FF9900","#FF8800","#FF7700","#FF6600",
-                                                       "#FF4400","#FF2200","#FF0000")))
-
+                  , rownames= FALSE)
   })
 
 } # End Function (input, output, session)
