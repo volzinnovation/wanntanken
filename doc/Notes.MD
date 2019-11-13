@@ -1,3 +1,13 @@
+# Creating an API
+
+Usage of R package plumber via docker image trestletech/plumbr
+
+```
+docker run --rm -p 8000:8000 -v `pwd`/src/api/test-api.R:/plumber.R trestletech/plumber /plumber.R
+'''
+
+Github file in directory src/api mapped for hosting via docker image and port 8000, see [Plumbr Docker](https://www.rplumber.io/docs/hosting.html#docker) for more.
+
 # Setup of database
 
 ## Hosting via AWS LightSail

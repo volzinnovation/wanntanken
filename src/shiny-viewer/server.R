@@ -46,6 +46,7 @@ function(input, output, session) {
                                                        "where stid='", stid, 
                                                        "'"))
      min = min_station$min
+     cat(input$daterange[2])
      # Calculate next price update after user chosen interval
      maxts = dbGetQuery(con, statement = paste0("select min(date)",
                                                 " from gas_station_information_history ",
