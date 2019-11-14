@@ -3,7 +3,7 @@
 Usage of R package plumber via docker image trestletech/plumbr
 
 ```
-docker run --rm -p 8000:8000 -v `pwd`/src/api/test-api.R:/plumber.R trestletech/plumber /plumber.R
+docker run --rm -p 8000:8000 -v `pwd`/query-api.R:/plumber.R trestletech/plumber /plumber.R
 '''
 
 Github file in directory src/api mapped for hosting via docker image and port 8000, see [Plumbr Docker](https://www.rplumber.io/docs/hosting.html#docker) for more.
@@ -16,12 +16,13 @@ Github file in directory src/api mapped for hosting via docker image and port 80
 - IP of server is 18.184.43.84, Port 22 and 5433 are open
 - Need SSH Key to connect to server via SSH -i, can be downloaded from light sail and need to chmod 400 to make it secure
 - Server has 80 GB SSD, currently ~70% utilized, with extra 256 GB block storage disk to hold database and git repository (can reattach to other instance)
-- Server has second 250 GB SSD /dev/xvdf mounted to /git 
+- Server has second 250 GB SSD /dev/xvdf mounted to /git (needs to be remounted after server restart currently)
+
 
 ## Database configuration and bulk import
 
 - Server has old Postgres 9.5 running on port 5433 due to problems with bulk import of Tankerkoenig data.
-- Change /etc/postgresql/9.5/postgresql.conf to map to port 5433 and have storage directory on mounted drive (currently /git)
+- Change /etc/postgresql/9.5/main/postgresql.conf to map to port 5433 and have storage directory on mounted drive (currently /git), also ensure that remote connections to database are possible accept connections from * and allow read only user fuel to access the database from any IP in pg_hba.conf
 - Need to setup deb repository from postgres site to get postgresql95 package
 - wget dumps from [tankerkoenig](https://creativecommons.tankerkoenig.de/)
 - Setup user with read-only access to database to interface dashboard
