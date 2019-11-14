@@ -1,3 +1,3 @@
 library(plumber)
-r<-plumb("test-api.R")
-r$run(port=8080)
+r<-plumb("query-api.R")
+r$run("0.0.0.0", port=8000)

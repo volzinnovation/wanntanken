@@ -1,11 +1,9 @@
 # Test history API
-
 require(RPostgreSQL)
-require(properties)
 require(xts)
+require(properties)
 
-#* Query historic price changes for German fuel stations
-#* @param stid Query  station id to collect t
+
 #* @param fuel The fuel type either E10, E5, or Diesel, where Diesel is the default
 #* @get /history
 function(stid="",fuel=""){
@@ -24,7 +22,6 @@ function(stid="",fuel=""){
 
   p = read.properties("secret.properties")
   drv <- dbDriver("PostgreSQL")
-  
   
   con <- dbConnect(drv, dbname=p$dbname, user=p$user, password=p$password, host=p$host, port=p$port)
   max_station =  dbGetQuery(con, statement = paste0("select max(date)",
@@ -92,8 +89,10 @@ function(stid="",fuel=""){
  #  result.frame =  result.frame[order( result.frame$price), ]
   min_price = min(result.frame$price)
   max_price = max(result.frame$price)
-  names(result.frame) = c("Stunde", "Abweichung in Cent")
-  list(min_price,max_price,result.frame)
+  #names(result.frame) = c("Stunde", "Abweichung in Cent")
+  result.frame$price
+  #list(prices=result.frame$price) 
+  #list(min_price=paste0("",min_price),max_price=paste0("",max_price)) # ,history=result.frame)
   # list(msg = paste0("The station id is: '", stid, "', you requested data for ", fuel))
 }
 
